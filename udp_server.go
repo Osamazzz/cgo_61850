@@ -1,17 +1,14 @@
-package main
+package iec61850
 
 import (
 	"fmt"
 	"net"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
-func StartListen() {
+func StartListen(sig chan struct{}) {
 	// 创建UDP地址对象，指定要监听的IP和端口
-	addr, err := net.ResolveUDPAddr("udp", ":8080")
+	addr, err := net.ResolveUDPAddr("udp", ":9998")
 	if err != nil {
 		fmt.Println("Error resolving address:", err)
 		os.Exit(1)
@@ -25,10 +22,7 @@ func StartListen() {
 	}
 	defer conn.Close()
 
-	fmt.Println("UDP server is listening on port 8080...")
-
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
+	fmt.Println("UDP server is listening on port 9998...")
 
 	// 缓冲区大小
 	buffer := make([]byte, 1024)
@@ -45,10 +39,8 @@ func StartListen() {
 				fmt.Println("Error reading from UDP:", err)
 				continue
 			}
-
 			// 输出收到的消息和客户端地址
 			fmt.Printf("Received %s from %s\n", string(buffer[:n]), clientAddr)
-
 			// 回复客户端
 			response := []byte("Hello from UDP server!")
 			_, err = conn.WriteToUDP(response, clientAddr)
@@ -56,9 +48,7 @@ func StartListen() {
 				fmt.Println("Error writing to UDP:", err)
 				continue
 			}
+			//fmt.Println("Reading...")
 		}
-
-		// 模拟一些处理，增加延迟
-		time.Sleep(1 * time.Second)
 	}
 }

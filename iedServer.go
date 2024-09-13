@@ -12,11 +12,18 @@ type MmsServer struct {
 	mmsServer C.MmsServer
 }
 
-// GetMMSServer 直接从已经有的iedserver里面获取
+// GetMmsServer  直接从已经有的iedserver里面获取
 func GetMmsServer(server *IedServer) *MmsServer {
 	return &MmsServer{
 		mmsServer: C.IedServer_getMmsServer(server.server),
 	}
+}
+
+// 设置服务器的基础文件路径，用于处理 MMS 文件服务。
+func setFileStoreBasePath(is *IedServer, path string) {
+	cpath := C.CString(path)
+	defer C.free(unsafe.Pointer(cpath))
+	C.IedServer_setFilestoreBasepath(is.server, cpath)
 }
 
 // NewServer creates a new instance of the IedServer using the provided model.

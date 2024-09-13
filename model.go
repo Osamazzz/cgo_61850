@@ -5,12 +5,17 @@ package iec61850
 // #include <iec61850_server.h>
 import "C"
 import (
+	"fmt"
 	"os"
 	"unsafe"
 )
 
 type IedModel struct {
 	model *C.IedModel
+}
+
+type LogicalDevice struct {
+	device *C.LogicalDevice
 }
 
 func NewIedModel(name string) *IedModel {
@@ -27,6 +32,48 @@ func GetModel() *IedModel {
 		model: &C.iedModel,
 	}
 }
+
+// firstchild是逻辑设备类型
+// GetFirstChild 获取 IedModel 的第一个 LogicalDevice 子节点
+func (im *IedModel) GetFirstChild() *LogicalDevice {
+	// 检查 im.model 是否为 nil
+	if im.model == nil {
+		fmt.Println("im.model is nil, cannot get firstChild")
+		return nil
+	}
+
+	// 获取 firstChild，确保类型匹配
+	// 通过unsafe.pointer来访问这些结构体中的成员，再强转为相应类型，这很重要
+	firstChild := (*C.LogicalDevice)(unsafe.Pointer(im.model.firstChild))
+
+	// 检查 firstChild 是否为 nil
+	if firstChild == nil {
+		fmt.Println("firstChild is nil")
+		return nil
+	}
+
+	// 返回 LogicalDevice 的 Go 包装类型
+	return &LogicalDevice{
+		device: firstChild,
+	}
+}
+
+func (ln *LogicalNode) Getsibling() *LogicalNode {
+	//var sibling *LogicalNode
+	//sibling.node = (*C.LogicalNode)(unsafe.Pointer(ln.node.sibling))
+	//return sibling
+	return &LogicalNode{
+		node: (*C.LogicalNode)(unsafe.Pointer(ln.node.sibling)),
+	}
+}
+
+//func (do *DataObject) GetChild(name string) *DataAttribute {
+//	cname := C.CString(name)
+//	defer C.free(unsafe.Pointer(cname))
+//	return &DataAttribute{
+//		attribute: (*C.DataAttribute)(unsafe.Pointer(C.ModelNode_getChild())),
+//	}
+//}
 
 func (m *IedModel) Destroy() {
 	C.IedModel_destroy(m.model)
@@ -45,10 +92,6 @@ func CreateModelFromConfigFileEx(filepath string) (*IedModel, error) {
 		model: C.ConfigFileParser_createModelFromConfigFileEx(cFilepath),
 	}
 	return model, nil
-}
-
-type LogicalDevice struct {
-	device *C.LogicalDevice
 }
 
 func (m *IedModel) CreateLogicalDevice(name string) *LogicalDevice {
