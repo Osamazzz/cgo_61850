@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"time"
 )
 
 func StartListen(sig chan struct{}) {
@@ -39,16 +40,11 @@ func StartListen(sig chan struct{}) {
 				fmt.Println("Error reading from UDP:", err)
 				continue
 			}
-			// 输出收到的消息和客户端地址
-			fmt.Printf("Received %s from %s\n", string(buffer[:n]), clientAddr)
-			// 回复客户端
-			response := []byte("Hello from UDP server!")
-			_, err = conn.WriteToUDP(response, clientAddr)
-			if err != nil {
-				fmt.Println("Error writing to UDP:", err)
-				continue
+			if n > 0 {
+				fmt.Printf("Received %s from %s\n", string(buffer[:n]), clientAddr)
+				currentTimeInMilliSeconds := time.Now().UnixNano() / int64(time.Millisecond)
+				msgToMmsData(iedServer, buffer, n, uint64(currentTimeInMilliSeconds))
 			}
-			//fmt.Println("Reading...")
 		}
 	}
 }

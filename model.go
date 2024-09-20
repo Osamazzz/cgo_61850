@@ -33,8 +33,7 @@ func GetModel() *IedModel {
 	}
 }
 
-// firstchild是逻辑设备类型
-// GetFirstChild 获取 IedModel 的第一个 LogicalDevice 子节点
+// GetFirstChild 获取IedModel的第一个LogicalDevice ,子节点firstchild是逻辑设备类型
 func (im *IedModel) GetFirstChild() *LogicalDevice {
 	// 检查 im.model 是否为 nil
 	if im.model == nil {
@@ -59,11 +58,10 @@ func (im *IedModel) GetFirstChild() *LogicalDevice {
 }
 
 func (ln *LogicalNode) Getsibling() *LogicalNode {
-	//var sibling *LogicalNode
-	//sibling.node = (*C.LogicalNode)(unsafe.Pointer(ln.node.sibling))
-	//return sibling
+	// var ld_firstChild *LogicalNode
+	//	ld_firstChild = (*LogicalNode)(unsafe.Pointer(ld.device.firstChild))
 	return &LogicalNode{
-		node: (*C.LogicalNode)(unsafe.Pointer(ln.node.sibling)),
+		(*C.LogicalNode)(unsafe.Pointer(ln.node.sibling)),
 	}
 }
 

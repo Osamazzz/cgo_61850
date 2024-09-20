@@ -79,6 +79,10 @@ func (is *IedServer) UpdateInt32AttributeValue(attr *DataAttribute, value int32)
 	C.IedServer_updateInt32AttributeValue(is.server, attr.attribute, C.int32_t(value))
 }
 
+func (is *IedServer) UpdateInt64AttributeValue(attr *DataAttribute, value int64) {
+	C.IedServer_updateInt64AttributeValue(is.server, attr.attribute, C.int64_t(value))
+}
+
 // UpdateVisibleStringAttributeValue updates a DataAttribute with a visible string value.
 func (is *IedServer) UpdateVisibleStringAttributeValue(attr *DataAttribute, value string) {
 	cvalue := C.CString(value)
