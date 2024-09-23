@@ -43,7 +43,7 @@ func StartListen(sig chan struct{}) {
 			if n > 0 {
 				fmt.Printf("Received %s from %s\n", string(buffer[:n]), clientAddr)
 				currentTimeInMilliSeconds := time.Now().UnixNano() / int64(time.Millisecond)
-				msgToMmsData(iedServer, buffer, n, uint64(currentTimeInMilliSeconds))
+				msgToMmsData(iedServer, buffer, n, currentTimeInMilliSeconds)
 			}
 		}
 	}

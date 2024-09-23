@@ -14,6 +14,7 @@ import (
 var iedServer *IedServer
 
 func StartServer() {
+	// 初始化ied模型
 	iedModel := GetModel()
 	if iedModel.model == nil {
 		fmt.Println("bad.")
@@ -94,7 +95,7 @@ func castToLongAnylenUR(first []byte, n int) uint64 {
 	return reverse64(res)
 }
 
-func msgToMmsData(server *IedServer, msg []byte, n int, timeVal uint64) int {
+func msgToMmsData(server *IedServer, msg []byte, n int, timeVal int64) int {
 	if n < 13 {
 		return -1
 	}
@@ -172,7 +173,7 @@ func msgToMmsData(server *IedServer, msg []byte, n int, timeVal uint64) int {
 			panic("unhandled default case")
 		}
 
-		server.UpdateUTCTimeAttributeValue(t, int64(timeVal))
+		server.UpdateUTCTimeAttributeValue(t, timeVal)
 		server.UnlockDataModel()
 
 		p = p[2+lengthFlag+length:]
